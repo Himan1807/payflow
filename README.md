@@ -23,15 +23,31 @@ The project demonstrates distributed system design, service discovery, API Gatew
 
 ## Architecture
 
-Client
-    │
-API Gateway
-    │
-─────────────────────────────
-│     │      │      │
-Auth User Account Payment
-               │
-        Notification
+## System Architecture
+
+                 ┌──────────────┐
+                 │    Client    │
+                 └──────┬───────┘
+                        │
+                 ┌──────▼───────┐
+                 │ API Gateway  │
+                 └──────┬───────┘
+                        │
+      ┌─────────────────┼───────────────────┐
+      ▼                 ▼                   ▼
+┌──────────┐     ┌──────────┐      ┌─────────────┐
+│   Auth   │     │   User   │      │  Payment    │
+└──────────┘     └──────────┘      └──────┬──────┘
+                                          │
+                          ┌───────────────┴───────────────┐
+                          ▼                               ▼
+                  ┌──────────────┐               ┌────────────────┐
+                  │   Account    │               │ Notification   │
+                  └──────────────┘               └────────────────┘
+
+────────────────────────────────────────────────────────────────────
+
+ Eureka Server | Config Server | MySQL | Zipkin | Docker | Kubernetes
 
 ## Services
 
@@ -60,6 +76,26 @@ Auth User Account Payment
 - Dockerized Deployment
 - Kubernetes Deployment
 
+## Roadmap
+
+- [x] Project planning
+- [x] System architecture
+- [ ] Config Server
+- [ ] Eureka Naming Server
+- [ ] API Gateway
+- [ ] JWT Authentication
+- [ ] User Service
+- [ ] Account Service
+- [ ] Payment Service
+- [ ] Notification Service
+- [ ] Distributed Tracing (Zipkin)
+- [ ] Resilience4J
+- [ ] Docker
+- [ ] Kubernetes
+- [ ] Kafka Integration
+- [ ] Redis Caching
+- [ ] OAuth2 Integration
+
 ## Future Enhancements
 
 - Kafka
@@ -67,3 +103,7 @@ Auth User Account Payment
 - OAuth2
 - Prometheus
 - Grafana
+
+## Author
+
+**Himanshu Singh**
