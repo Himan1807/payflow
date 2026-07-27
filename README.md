@@ -25,29 +25,7 @@ The project demonstrates distributed system design, service discovery, API Gatew
 
 ## System Architecture
 
-                 ┌──────────────┐
-                 │    Client    │
-                 └──────┬───────┘
-                        │
-                 ┌──────▼───────┐
-                 │ API Gateway  │
-                 └──────┬───────┘
-                        │
-      ┌─────────────────┼───────────────────┐
-      ▼                 ▼                   ▼
-┌──────────┐     ┌──────────┐      ┌─────────────┐
-│   Auth   │     │   User   │      │  Payment    │
-└──────────┘     └──────────┘      └──────┬──────┘
-                                          │
-                          ┌───────────────┴───────────────┐
-                          ▼                               ▼
-                  ┌──────────────┐               ┌────────────────┐
-                  │   Account    │               │ Notification   │
-                  └──────────────┘               └────────────────┘
-
-────────────────────────────────────────────────────────────────────
-
- Eureka Server | Config Server | MySQL | Zipkin | Docker | Kubernetes
+<img width="1536" height="1024" alt="ChatGPT Image Jul 27, 2026, 09_34_51 PM" src="https://github.com/user-attachments/assets/316b4d08-228e-4cfb-a373-8a8478c7bfa8" />
 
 ## Services
 
@@ -78,23 +56,27 @@ The project demonstrates distributed system design, service discovery, API Gatew
 
 ## Roadmap
 
-- [x] Project planning
-- [x] System architecture
+### Phase 1 (Core Microservices)
+- [x] System Design
 - [ ] Config Server
-- [ ] Eureka Naming Server
+- [ ] Eureka Server
 - [ ] API Gateway
 - [ ] JWT Authentication
 - [ ] User Service
 - [ ] Account Service
 - [ ] Payment Service
 - [ ] Notification Service
-- [ ] Distributed Tracing (Zipkin)
+
+### Phase 2 (Reliability & Deployment)
+- [ ] Zipkin
 - [ ] Resilience4J
 - [ ] Docker
 - [ ] Kubernetes
-- [ ] Kafka Integration
-- [ ] Redis Caching
-- [ ] OAuth2 Integration
+
+### Phase 3 (Advanced Features)
+- [ ] Kafka
+- [ ] Redis
+- [ ] OAuth2
 
 ## Future Enhancements
 
