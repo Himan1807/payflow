@@ -6,7 +6,7 @@ The project demonstrates distributed system design, service discovery, API Gatew
 
 ## Tech Stack
 
-- Java 21
+- Java 25
 - Spring Boot
 - Spring Cloud
 - Spring Security
