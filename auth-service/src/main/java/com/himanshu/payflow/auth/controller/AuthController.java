@@ -1,5 +1,7 @@
 package com.himanshu.payflow.auth.controller;
 
+import com.himanshu.payflow.auth.dto.LoginRequest;
+import com.himanshu.payflow.auth.dto.LoginResponse;
 import com.himanshu.payflow.auth.dto.RegisterRequest;
 import com.himanshu.payflow.auth.dto.RegisterResponse;
 import com.himanshu.payflow.auth.service.AuthService;
@@ -26,5 +28,13 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authService.register(request));
+    }
+
+    @PostMapping(path = "/login")
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        System.out.println("LOGIN CONTROLLER HIT");
+        return ResponseEntity.ok(authService.login(request));
     }
 }
