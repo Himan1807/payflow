@@ -1,5 +1,7 @@
 package com.himanshu.payflow.auth.service;
 
+import com.himanshu.payflow.auth.dto.UserResponse;
+import com.himanshu.payflow.auth.entity.AppUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -22,12 +26,34 @@ public class JwtService {
     private long jwtExpiration;
 
     public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
+    }
+
+    public String generateToken(Map<String, Object> claims, UserDetails userDetails){
         return Jwts.builder()
+                .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .expiration(
+                        new Date(System.currentTimeMillis() + jwtExpiration)
+                )
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public String generateToken(AppUser user){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId",  user.getId());
+        claims.put("role", user.getRole().name());
+        return generateToken(claims, user);
+    }
+
+    public Long extractUserId(String token){
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
+    }
+
+    public String extractRole(String token){
+        return extractClaim(token, claims -> claims.get("role",  String.class));
     }
 
     public String extractUsername(String token) {

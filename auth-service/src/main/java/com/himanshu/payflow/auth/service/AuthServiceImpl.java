@@ -1,21 +1,18 @@
 package com.himanshu.payflow.auth.service;
 
-import com.himanshu.payflow.auth.dto.LoginRequest;
-import com.himanshu.payflow.auth.dto.LoginResponse;
-import com.himanshu.payflow.auth.dto.RegisterRequest;
-import com.himanshu.payflow.auth.dto.RegisterResponse;
+import com.himanshu.payflow.auth.dto.*;
 import com.himanshu.payflow.auth.entity.AppUser;
+import com.himanshu.payflow.auth.entity.RefreshToken;
 import com.himanshu.payflow.auth.entity.Role;
 import com.himanshu.payflow.auth.exception.EmailAlreadyExistsException;
 import com.himanshu.payflow.auth.exception.PhoneNumberAlreadyExistsException;
 import com.himanshu.payflow.auth.mapper.AppUserMapper;
 import com.himanshu.payflow.auth.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +29,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     private final JwtService jwtService;
+
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
@@ -55,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public TokenResponse login(LoginRequest request) {
 
         Authentication authentication =
                 authenticationManager.authenticate(
@@ -65,17 +64,58 @@ public class AuthServiceImpl implements AuthService {
                         )
                 );
 
-        System.out.println(authentication);
-
         AppUser user = (AppUser) authentication.getPrincipal();
 
         assert user != null;
-        String token = jwtService.generateToken(user);
+        String accessToken = jwtService.generateToken(user);
 
-        return LoginResponse.builder()
-                .token(token)
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
                 .tokenType("Bearer")
-                .expiresIn(3600)
                 .build();
+    }
+
+    public UserResponse getCurrentUser(){
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        AppUser user = (AppUser) authentication.getPrincipal();
+        return mapper.toUserResponse(user);
+    }
+
+    @Override
+    public TokenResponse refreshToken(RefreshTokenRequest request) {
+        RefreshToken refreshToken = refreshTokenService
+                .verifyRefreshToken(
+                        request.refreshToken()
+                );
+
+        AppUser user = refreshToken.getUser();
+
+        String accessToken = jwtService.generateToken(user);
+
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
+
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(newRefreshToken.getToken())
+                .tokenType("Bearer")
+                .build();
+    }
+
+    @Override
+    public void logout(LogoutRequest request) {
+        RefreshToken refreshToken = refreshTokenService
+                .verifyRefreshToken(
+                        request.refreshToken()
+                );
+
+        refreshTokenService.deleteByUser(
+                refreshToken.getUser()
+        );
     }
 }
